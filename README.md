@@ -1,45 +1,41 @@
 
+#  Vault Metadata Scanner – C++ Security Recon Tool
 
-#  vault-metadata-scanner
+A high-performance, C++17-based tool for performing **credential-less metadata exposure tests** on vault-style APIs such as 1Password, LastPass, or similar services.
 
-A high-performance, C++-based tool to brute-force test metadata access in vault-style APIs such as **1Password**, **LastPass**, or other zero-knowledge cloud password managers — **without authentication**.
-
-This tool is part of an independent security research project aimed at identifying real-world unsafe metadata exposure vectors within credential vault systems.
-
----
-
-##  Features
-
--  Bruteforces vault/item ID patterns with live response parsing  
--  Simulates unauthenticated attackers (no login required)  
--  Parses HTTP responses (200/403/404/429) and JSON metadata  
--  Terminal logging with color and timestamp  
--  Customizable scan range and sleep timer  
--  No API key or user credentials needed (blackbox scan)
+This project is part of an independent security research initiative focused on **identifying publicly accessible metadata leaks** in cloud-based password management systems, following responsible disclosure standards.
 
 ---
 
-##  File Structure
+##  Key Features
 
-```
-
-vault-metadata-scanner/
-├── src/
-│   └── main.cpp          # Full source code
-├── CMakeLists.txt        # For optional CMake support
-├── README.md             # You are here
-├── .gitignore            # Ignores binaries, build dirs, temp files
-
-````
+- Tests vault/item ID ranges to detect unintentionally exposed metadata  
+- Parses and color-codes HTTP responses (200/403/404/429)  
+- Logs time-stamped results in real time  
+- Customizable scan ranges and request intervals  
+- Built with `libcurl` for full control over request headers and behaviors  
+- No account or login required (black-box metadata enumeration)
 
 ---
 
-## 🔧 Build Instructions
+##  Why This Matters
+
+Even if sensitive data remains protected, **unintentional exposure of metadata** can:
+- Reveal internal naming conventions or structure
+- Aid social engineering and phishing
+- Undermine claims of “zero-knowledge” design
+- Contribute to larger enumeration-based attack surfaces
+
+This tool helps researchers safely detect such cases **before bad actors can**.
+
+---
+
+##  Build Instructions
 
 ### Requirements
 
 - C++17 or higher  
-- [libcurl](https://curl.se/libcurl/) (Windows users: see [curl.se/windows](https://curl.se/windows))
+- [libcurl](https://curl.se/libcurl/)  
 
 ### Build via g++
 
@@ -48,35 +44,50 @@ g++ src/main.cpp -o scanner -lcurl
 ./scanner
 ````
 
-> On Windows, ensure `libcurl.dll` and `libcurl.lib` are available in your build path or linked via Visual Studio.
+> On Windows, ensure `libcurl.dll` and `libcurl.lib` are available in your build environment or use Visual Studio with additional linker settings.
 
 ---
 
-##  Example Output
+##  Project Structure
 
 ```
-[*] Trying: https://start.1password.com/api/v1/vaults/1002/items
-[+] FOUND at ID 1002 ✅
-→ Response (first 300 chars):
+vault-metadata-scanner/
+├── src/
+│   └── main.cpp         # Core scanner implementation
+├── .gitignore           # Ignore build artifacts and temp files
+├── README.md            # You are here
+├── CMakeLists.txt       # Optional CMake build support
+```
+
+---
+
+## Example Output
+
+```
+[*] Trying: https://target.service.com/api/vaults/1002/items
+[+] Possible metadata found at ID 1002 ✅
+→ Partial JSON:
 {
-    "title": "Internal Dev Vault",
-    "created_at": "2025-07-14T10:33Z",
-    ...
+   "title": "Company Internal Vault",
+   "last_updated": "2025-07-14T03:20Z",
+   ...
 }
 [x] Not Found at ID 1003
-[?] Code 429 (Rate Limited) at ID 1004
+[?] 429 Too Many Requests at ID 1004 – waiting...
 ```
 
 ---
 
-##  Ethical Use
+##  Responsible Use
 
-This repository was created for **educational purposes and responsible security research** only.
-If you discover a vulnerability using this tool, please report it through coordinated disclosure channels like:
+This tool is intended for:
 
-* [HackerOne](https://hackerone.com/)
-* [BugCrowd](https://bugcrowd.com/)
-* [1Password's Disclosure Policy](https://hackerone.com/1password)
+* Educational purposes
+* Ethical security research
+* Responsible disclosure programs (e.g., [HackerOne](https://hackerone.com), [BugCrowd](https://bugcrowd.com))
+* Exploring public metadata exposure **without attempting to bypass authentication**
 
----
+**Do not** use this tool against any target without prior permission or participation in a legal disclosure program.
+
+
 
